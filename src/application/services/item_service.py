@@ -2,15 +2,15 @@
 Сервис для работы с материалами (Item)
 """
 
+from datetime import UTC, datetime
 from typing import List, Optional
-from datetime import datetime
 
+from src.application.schemas.item import ItemCreate, ItemResponse, ItemUpdate
 from src.domain.entities.item import Item
 from src.domain.enums import ItemKind, ItemStatus, Priority
 from src.domain.exceptions import EntityNotFoundError, PermissionDeniedError
 from src.infrastructure.repositories.item_repository import ItemRepository
 from src.infrastructure.repositories.tag_repository import TagRepository
-from src.application.schemas.item import ItemCreate, ItemUpdate, ItemResponse
 
 
 class ItemService:
@@ -41,7 +41,7 @@ class ItemService:
             ItemResponse: Созданный материал
         """
         # Создаем доменную сущность
-        now = datetime.now()
+        now = datetime.now(UTC)
         entity = Item(
             id=None,
             user_id=user_id,

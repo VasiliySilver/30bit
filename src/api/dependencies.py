@@ -5,12 +5,12 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import get_db
-from src.infrastructure.repositories.user_repository import UserRepository
-from src.infrastructure.repositories.tag_repository import TagRepository
-from src.infrastructure.repositories.item_repository import ItemRepository
 from src.application.services.item_service import ItemService
 from src.application.services.tag_service import TagService
+from src.database import get_db
+from src.infrastructure.repositories.item_repository import ItemRepository
+from src.infrastructure.repositories.tag_repository import TagRepository
+from src.infrastructure.repositories.user_repository import UserRepository
 
 
 async def get_user_repository(db: AsyncSession = Depends(get_db)) -> UserRepository:

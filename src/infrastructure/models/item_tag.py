@@ -2,10 +2,9 @@
 SQLAlchemy модель для связи Item-Tag (Many-to-Many)
 """
 
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, Table
 
 from src.database import Base
-
 
 # Таблица связи многие-ко-многим между Item и Tag
 item_tags = Table(

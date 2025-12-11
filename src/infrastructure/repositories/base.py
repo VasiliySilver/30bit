@@ -3,9 +3,9 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Optional, List
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Generic, List, Optional, TypeVar
 
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # Типы для Generic репозитория
 ModelType = TypeVar("ModelType", bound=object)

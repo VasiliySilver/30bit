@@ -2,15 +2,16 @@
 API роутер для работы с пользователями
 """
 
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 from datetime import datetime
+from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from src.api.dependencies import get_user_repository
+from src.application.schemas.common import ErrorResponse, MessageResponse
+from src.application.schemas.user import UserCreate, UserResponse, UserUpdate
 from src.domain.entities.user import User
 from src.infrastructure.repositories.user_repository import UserRepository
-from src.application.schemas.user import UserCreate, UserUpdate, UserResponse
-from src.application.schemas.common import MessageResponse, ErrorResponse
-from src.api.dependencies import get_user_repository
 
 router = APIRouter(prefix="/users", tags=["users"])
 

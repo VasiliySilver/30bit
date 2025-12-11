@@ -3,17 +3,18 @@ API роутер для работы с тегами
 """
 
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status, Query
 
-from src.application.services.tag_service import TagService
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from src.api.dependencies import get_current_user_id, get_tag_service
+from src.application.schemas.common import ErrorResponse, MessageResponse
 from src.application.schemas.tag import TagCreate, TagResponse
-from src.application.schemas.common import MessageResponse, ErrorResponse
+from src.application.services.tag_service import TagService
 from src.domain.exceptions import (
-    EntityNotFoundError,
     DuplicateEntityError,
+    EntityNotFoundError,
     PermissionDeniedError,
 )
-from src.api.dependencies import get_tag_service, get_current_user_id
 
 router = APIRouter(prefix="/tags", tags=["tags"])
 

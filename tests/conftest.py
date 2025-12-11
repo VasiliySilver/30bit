@@ -3,21 +3,22 @@
 """
 
 import os
-from datetime import datetime
-import pytest_asyncio
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.pool import StaticPool
-from fastapi.testclient import TestClient
+from datetime import UTC, datetime
 
-from src.database import Base
+import pytest_asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.config import get_settings
-from src.api.routers import items_router, tags_router, user_router
+from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.pool import StaticPool
+
 from src.api.dependencies import get_current_user_id
-from src.domain.entities.user import User
+from src.api.routers import items_router, tags_router, user_router
 from src.application.services.item_service import ItemService
 from src.application.services.tag_service import TagService
+from src.config import get_settings
+from src.database import Base
+from src.domain.entities.user import User
 from src.infrastructure.repositories.item_repository import ItemRepository
 from src.infrastructure.repositories.tag_repository import TagRepository
 
@@ -99,7 +100,7 @@ async def client(setup_db):
             id=1,
             email="test@example.com",
             display_name="Test User",
-            created_at=datetime.now(),
+            created_at=datetime.now(UTC),
         )
         await user_repo.create(test_user)
         await session.commit()
@@ -117,7 +118,7 @@ async def test_user():
         id=1,
         email="test@example.com",
         display_name="Test User",
-        created_at=datetime.now(),
+        created_at=datetime.now(UTC),
     )
 
 

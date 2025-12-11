@@ -2,17 +2,18 @@
 Репозиторий для работы с материалами (Item)
 """
 
-from typing import Optional, List
-from datetime import datetime, UTC
-from sqlalchemy import select, and_
-from sqlalchemy.orm import selectinload
+from datetime import UTC, datetime
+from typing import List, Optional
+
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.domain.entities.item import Item
 from src.domain.enums import ItemKind, ItemStatus, Priority
 from src.infrastructure.models.item import ItemModel
-from src.infrastructure.models.tag import TagModel
 from src.infrastructure.models.item_tag import item_tags
+from src.infrastructure.models.tag import TagModel
 from src.infrastructure.repositories.base import BaseRepository
 
 

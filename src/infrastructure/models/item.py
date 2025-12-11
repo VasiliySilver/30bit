@@ -2,19 +2,20 @@
 SQLAlchemy модель для Item
 """
 
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from datetime import datetime, UTC
-from sqlalchemy import String, Integer, Text, DateTime, Enum as SQLEnum, ForeignKey
+from sqlalchemy import DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
 from src.domain.enums import ItemKind, ItemStatus, Priority
 
-
 if TYPE_CHECKING:
-    from src.infrastructure.models.user import UserModel
     from src.infrastructure.models.tag import TagModel
+    from src.infrastructure.models.user import UserModel
 
 
 class ItemModel(Base):
@@ -54,7 +55,10 @@ class ItemModel(Base):
         DateTime, default=lambda: datetime.now(UTC), nullable=False, index=True
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC), nullable=False
+        DateTime,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+        nullable=False,
     )
 
     # Связи

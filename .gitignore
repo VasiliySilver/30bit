@@ -176,3 +176,4 @@ cython_debug/
 # Other
 test.db
 reading_list.db
+.env.old

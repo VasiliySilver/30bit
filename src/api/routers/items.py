@@ -2,16 +2,17 @@
 API роутер для работы с материалами
 """
 
-from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+
+from src.api.dependencies import get_current_user_id, get_item_service
+from src.application.schemas.common import ErrorResponse, MessageResponse
+from src.application.schemas.item import ItemCreate, ItemResponse, ItemUpdate
 from src.application.services.item_service import ItemService
-from src.application.schemas.item import ItemCreate, ItemUpdate, ItemResponse
-from src.application.schemas.common import MessageResponse, ErrorResponse
 from src.domain.enums import ItemKind, ItemStatus, Priority
 from src.domain.exceptions import EntityNotFoundError, PermissionDeniedError
-from src.api.dependencies import get_item_service, get_current_user_id
 
 router = APIRouter(prefix="/items", tags=["items"])
 

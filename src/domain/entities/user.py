@@ -2,8 +2,8 @@
 Доменная сущность User
 """
 
-from datetime import datetime, UTC
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
@@ -31,4 +31,3 @@ class User:
 
         if not self.display_name or len(self.display_name.strip()) == 0:
             raise ValueError("Display name не может быть пустым")
-

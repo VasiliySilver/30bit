@@ -3,8 +3,9 @@ Pydantic схемы для Item
 """
 
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.domain.enums import ItemKind, ItemStatus, Priority
 

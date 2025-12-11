@@ -2,8 +2,9 @@
 Репозиторий для работы с пользователями
 """
 
-from typing import Optional
 from datetime import UTC
+from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

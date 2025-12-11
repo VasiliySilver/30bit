@@ -2,24 +2,25 @@
 Скрипт для заполнения базы тестовыми пользователями, тегами и материалами
 """
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import asyncio
-from datetime import datetime, UTC
+from datetime import UTC, datetime
+
 from sqlalchemy import select
 
 from src.database import AsyncSessionLocal, init_db
-from src.infrastructure.models.item import ItemModel
-from src.infrastructure.repositories.user_repository import UserRepository
-from src.infrastructure.repositories.tag_repository import TagRepository
-from src.infrastructure.repositories.item_repository import ItemRepository
-from src.domain.entities.user import User
-from src.domain.entities.tag import Tag
 from src.domain.entities.item import Item
+from src.domain.entities.tag import Tag
+from src.domain.entities.user import User
 from src.domain.enums import ItemKind, ItemStatus, Priority
+from src.infrastructure.models.item import ItemModel
+from src.infrastructure.repositories.item_repository import ItemRepository
+from src.infrastructure.repositories.tag_repository import TagRepository
+from src.infrastructure.repositories.user_repository import UserRepository
 
 
 async def seed():

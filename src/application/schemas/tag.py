@@ -2,7 +2,7 @@
 Pydantic схемы для Tag
 """
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class TagBase(BaseModel):

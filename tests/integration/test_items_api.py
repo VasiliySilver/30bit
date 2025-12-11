@@ -2,8 +2,9 @@
 Интеграционные тесты для Items API
 """
 
-import pytest
 import uuid
+
+import pytest
 
 
 @pytest.fixture

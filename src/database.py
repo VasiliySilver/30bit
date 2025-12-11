@@ -3,11 +3,12 @@
 """
 
 from typing import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import (
-    create_async_engine,
+    AsyncEngine,
     AsyncSession,
     async_sessionmaker,
-    AsyncEngine,
+    create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
 

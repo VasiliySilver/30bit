@@ -4,14 +4,14 @@
 
 from typing import List
 
+from src.application.schemas.tag import TagCreate, TagResponse
 from src.domain.entities.tag import Tag
 from src.domain.exceptions import (
-    EntityNotFoundError,
     DuplicateEntityError,
+    EntityNotFoundError,
     PermissionDeniedError,
 )
 from src.infrastructure.repositories.tag_repository import TagRepository
-from src.application.schemas.tag import TagCreate, TagResponse
 
 
 class TagService:

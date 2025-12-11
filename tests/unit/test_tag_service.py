@@ -3,6 +3,7 @@
 """
 
 import pytest
+
 from src.application.schemas.tag import TagCreate
 from src.domain.exceptions import DuplicateEntityError, EntityNotFoundError
 

@@ -2,8 +2,9 @@
 Репозиторий для работы с тегами
 """
 
-from typing import Optional, List
-from sqlalchemy import select, and_
+from typing import List, Optional
+
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.entities.tag import Tag

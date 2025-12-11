@@ -2,8 +2,9 @@
 Общие Pydantic схемы
 """
 
-from typing import Generic, TypeVar, List
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Generic, List, TypeVar
+
+from pydantic import BaseModel, ConfigDict, Field
 
 # Generic тип для данных в пагинированном ответе
 T = TypeVar("T")

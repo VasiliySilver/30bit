@@ -2,8 +2,8 @@
 Доменная сущность Item
 """
 
-from datetime import datetime, UTC
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Optional
 
 from src.domain.enums import ItemKind, ItemStatus, Priority
@@ -43,7 +43,6 @@ class Item:
 
         if self.user_id <= 0:
             raise ValueError("User ID должен быть положительным числом")
-
 
         if self.updated_at < self.created_at:
             raise ValueError("Дата обновления не может быть раньше даты создания")

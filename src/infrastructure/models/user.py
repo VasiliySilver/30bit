@@ -2,9 +2,10 @@
 SQLAlchemy модель для User
 """
 
-from typing import List, TYPE_CHECKING
-from datetime import datetime, UTC
-from sqlalchemy import String, DateTime
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, List
+
+from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
