@@ -26,14 +26,20 @@
 git clone <repo-url>
 cd 30bit
 
+# Настрой виртуальное окружение
+ uv venv .venv -p 3.12
+
+# Настрои и отредактируй .env по необходимости
+cp .env.example .env
+
 # Установи зависимости
-uv pip install -r requirements.txt
+uv sync
 
 # Применить миграции
-alembic upgrade head
+uv run alembic upgrade head
 
 # Заполнить тестовыми данными
-PYTHONPATH=. uv run python scripts/seed_data.py
+uv run python scripts/seed_data.py
 
 # Запустить приложение
 uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
@@ -47,15 +53,21 @@ http://localhost:8000/docs
 ## 🐳 Запуск в Docker
 
 ```bash
+# Перейти в папку deployment
+cd deployment
+
 # Собрать и запустить сервисы (app + postgres)
-docker-compose up --build
+# Миграции и seed-данные применяются автоматически
+docker compose up --build
 
-# Применить миграции внутри контейнера
-docker-compose exec app alembic upgrade head
+# Проверить развертывание
+./check_deployment.sh
 
-# Заполнить тестовыми данными
-docker-compose exec app python scripts/seed_data.py
+# API будет доступен на http://localhost:8000
+# Swagger UI: http://localhost:8000/docs
 ```
+
+**Примечание:** Все переменные окружения берутся из `deployment/.env.docker`. Для продакшена отредактируйте этот файл.
 
 ---
 
@@ -70,11 +82,11 @@ pytest
 
 ## 🛠️ Основные команды
 
-- `alembic upgrade head` — применить миграции
-- `PYTHONPATH=. python scripts/seed_data.py` — заполнить тестовыми данными
-- `uv run uvicorn src.main:app --reload` — запуск API
-- `ruff check .` — линтинг
-- `pytest` — тесты
+- `uv run alembic upgrade head` — применить миграции
+- `uv run python scripts/seed_data.py` — заполнить тестовыми данными
+- `uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000` — запуск API
+- `uv run ruff check .` — линтинг
+- `uv run pytest` — тесты
 
 ---
 

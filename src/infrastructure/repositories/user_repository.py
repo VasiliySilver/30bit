@@ -3,6 +3,7 @@
 """
 
 from typing import Optional
+from datetime import UTC
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -40,11 +41,14 @@ class UserRepository(BaseRepository[UserModel, User]):
         Returns:
             User: Доменная сущность пользователя
         """
+        created_at = model.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=UTC)
         return User(
             id=model.id,
             email=model.email,
             display_name=model.display_name,
-            created_at=model.created_at,
+            created_at=created_at,
         )
 
     async def to_model(self, entity: User) -> UserModel:
@@ -57,11 +61,14 @@ class UserRepository(BaseRepository[UserModel, User]):
         Returns:
             UserModel: SQLAlchemy модель
         """
+        created_at = entity.created_at
+        if created_at.tzinfo is not None:
+            created_at = created_at.replace(tzinfo=None)
         return UserModel(
             id=entity.id,
             email=entity.email,
             display_name=entity.display_name,
-            created_at=entity.created_at,
+            created_at=created_at,
         )
 
     async def get_by_email(self, email: str) -> Optional[User]:
