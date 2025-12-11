@@ -1,12 +1,13 @@
 """
 Настройка подключения к базе данных через SQLAlchemy
 """
+
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     AsyncSession,
     async_sessionmaker,
-    AsyncEngine
+    AsyncEngine,
 )
 from sqlalchemy.orm import declarative_base
 
@@ -18,9 +19,7 @@ Base = declarative_base()
 # Движок базы данных
 settings = get_settings()
 engine: AsyncEngine = create_async_engine(
-    settings.database_url,
-    echo=settings.database_echo,
-    future=True
+    settings.database_url, echo=settings.database_echo, future=True
 )
 
 # Фабрика сессий
@@ -29,14 +28,14 @@ AsyncSessionLocal = async_sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
     autocommit=False,
-    autoflush=False
+    autoflush=False,
 )
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency для получения сессии базы данных
-    
+
     Yields:
         AsyncSession: Сессия базы данных
     """

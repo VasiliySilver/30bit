@@ -18,6 +18,7 @@ dependencies = [
 # Configuration specific to uv can go here
 
 [tool.ruff]
+ignore = ["F821"]
 line-length = 88
 target-version = "py312"
 
