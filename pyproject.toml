@@ -45,6 +45,7 @@ line_length = 88
 
 [tool.commitizen]
 name = "cz_conventional_commits"
+version_files = ["pyproject.toml:version"]
 
 [dependency-groups]
 dev = [
