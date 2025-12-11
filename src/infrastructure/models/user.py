@@ -3,7 +3,7 @@ SQLAlchemy модель для User
 """
 
 from typing import List, TYPE_CHECKING
-from datetime import datetime
+from datetime import datetime, UTC
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -33,7 +33,7 @@ class UserModel(Base):
     )
     display_name: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.now, nullable=False
+        DateTime, default=lambda: datetime.now(UTC), nullable=False
     )
 
     # Связи

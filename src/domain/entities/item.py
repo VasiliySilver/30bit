@@ -2,7 +2,7 @@
 Доменная сущность Item
 """
 
-from datetime import datetime
+from datetime import datetime, UTC
 from dataclasses import dataclass
 from typing import Optional
 
@@ -44,8 +44,6 @@ class Item:
         if self.user_id <= 0:
             raise ValueError("User ID должен быть положительным числом")
 
-        if self.created_at > datetime.now():
-            raise ValueError("Дата создания не может быть в будущем")
 
         if self.updated_at < self.created_at:
             raise ValueError("Дата обновления не может быть раньше даты создания")
@@ -76,4 +74,4 @@ class Item:
         if notes is not None:
             self.notes = notes
 
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.now(UTC)

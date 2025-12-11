@@ -8,7 +8,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, UTC
 from sqlalchemy import select
 
 from src.database import AsyncSessionLocal, init_db
@@ -30,7 +30,7 @@ async def seed():
         item_repo = ItemRepository(session)
 
         # Создаем пользователей
-        now = datetime.now()
+        now = datetime.now(UTC)
         users_data = [
             {"email": "alice@example.com", "display_name": "Alice"},
             {"email": "bob@example.com", "display_name": "Bob"},

@@ -3,7 +3,7 @@
 """
 
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, UTC
 from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,6 +45,12 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
         Returns:
             Item: Доменная сущность материала
         """
+        created_at = model.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=UTC)
+        updated_at = model.updated_at
+        if updated_at.tzinfo is None:
+            updated_at = updated_at.replace(tzinfo=UTC)
         return Item(
             id=model.id,
             user_id=model.user_id,
@@ -53,8 +59,8 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
             status=model.status,
             priority=model.priority,
             notes=model.notes,
-            created_at=model.created_at,
-            updated_at=model.updated_at,
+            created_at=created_at,
+            updated_at=updated_at,
         )
 
     async def to_model(self, entity: Item) -> ItemModel:
@@ -67,6 +73,12 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
         Returns:
             ItemModel: SQLAlchemy модель
         """
+        created_at = entity.created_at
+        if created_at.tzinfo is not None:
+            created_at = created_at.replace(tzinfo=None)
+        updated_at = entity.updated_at
+        if updated_at.tzinfo is not None:
+            updated_at = updated_at.replace(tzinfo=None)
         return ItemModel(
             id=entity.id,
             user_id=entity.user_id,
@@ -75,8 +87,8 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
             status=entity.status,
             priority=entity.priority,
             notes=entity.notes,
-            created_at=entity.created_at,
-            updated_at=entity.updated_at,
+            created_at=created_at,
+            updated_at=updated_at,
         )
 
     async def get_by_user(
