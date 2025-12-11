@@ -4,7 +4,9 @@ API роутер для работы с пользователями
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from datetime import datetime
 
+from src.domain.entities.user import User
 from src.infrastructure.repositories.user_repository import UserRepository
 from src.application.schemas.user import UserCreate, UserUpdate, UserResponse
 from src.application.schemas.common import MessageResponse, ErrorResponse
@@ -40,8 +42,16 @@ async def create_user(
                 "message": "Пользователь с таким email уже существует",
             },
         )
-    user = await user_repo.create(data)
-    return await user_repo.to_entity(user)
+
+    # Создаем User с нужными полями
+    user = User(
+        id=None,
+        email=data.email,
+        display_name=data.display_name,
+        created_at=datetime.now(),
+    )
+    created_user = await user_repo.create(user)
+    return UserResponse.model_validate(created_user)
 
 
 @router.get(
@@ -59,7 +69,7 @@ async def get_users(
     Получить всех пользователей
     """
     users = await user_repo.get_all(skip=skip, limit=limit)
-    return users
+    return [UserResponse.model_validate(user) for user in users]
 
 
 @router.get(
@@ -86,7 +96,7 @@ async def get_user(
                 "message": "Пользователь не найден",
             },
         )
-    return user
+    return UserResponse.model_validate(user)
 
 
 @router.put(
@@ -119,7 +129,7 @@ async def update_user(
     if data.display_name:
         user.display_name = data.display_name
     updated_user = await user_repo.update(user)
-    return updated_user
+    return UserResponse.model_validate(updated_user)
 
 
 @router.delete(

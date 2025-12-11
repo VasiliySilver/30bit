@@ -57,6 +57,10 @@ class ItemService:
         # Сохраняем в БД
         created_entity = await self.item_repository.create(entity)
 
+        # Проверяем, что материал был создан с ID
+        if created_entity.id is None:
+            raise ValueError("Created item must have a valid id")
+
         # Добавляем теги, если указаны
         if data.tag_ids:
             # Проверяем, что все теги принадлежат пользователю
@@ -103,6 +107,10 @@ class ItemService:
         if entity.user_id != user_id:
             raise PermissionDeniedError("Доступ к материалу запрещен")
 
+        # Проверяем, что материал имеет валидный ID
+        if entity.id is None:
+            raise ValueError("Retrieved item must have a valid id")
+
         return ItemResponse(
             id=entity.id,
             user_id=entity.user_id,
@@ -124,6 +132,12 @@ class ItemService:
         kind: Optional[ItemKind] = None,
         status: Optional[ItemStatus] = None,
         priority: Optional[Priority] = None,
+        tag_ids: Optional[List[int]] = None,
+        title_contains: Optional[str] = None,
+        created_from: Optional[datetime] = None,
+        created_to: Optional[datetime] = None,
+        sort_by: str = "created_at",
+        sort_order: str = "desc",
     ) -> List[ItemResponse]:
         """
         Получить список материалов пользователя с фильтрацией
@@ -146,13 +160,24 @@ class ItemService:
             kind=kind,
             status=status,
             priority=priority,
+            tag_ids=tag_ids,
+            title_contains=title_contains,
+            created_from=created_from,
+            created_to=created_to,
+            sort_by=sort_by,
+            sort_order=sort_order,
         )
 
         # Преобразуем в ответы
         result = []
         for entity in entities:
             # Получаем теги для каждого материала
-            item_with_tags = await self.item_repository.get_by_id_with_tags(entity.id)
+            if entity.id is None:
+                continue
+
+            entity_id = entity.id  # Гарантированно int после проверки
+
+            item_with_tags = await self.item_repository.get_by_id_with_tags(entity_id)
             if item_with_tags:
                 _, tag_ids = item_with_tags
             else:
@@ -160,7 +185,7 @@ class ItemService:
 
             result.append(
                 ItemResponse(
-                    id=entity.id,
+                    id=entity_id,
                     user_id=entity.user_id,
                     title=entity.title,
                     kind=entity.kind,
@@ -214,6 +239,10 @@ class ItemService:
 
         # Сохраняем в БД
         updated_entity = await self.item_repository.update(entity)
+
+        # Проверяем, что материал был обновлен с ID
+        if updated_entity.id is None:
+            raise ValueError("Updated item must have a valid id")
 
         # Обновляем теги, если указаны
         if data.tag_ids is not None:
@@ -283,3 +312,62 @@ class ItemService:
                 raise PermissionDeniedError(
                     f"Тег с id={tag_id} не принадлежит пользователю"
                 )
+
+    async def add_tags_to_item(
+        self, item_id: int, tag_ids: List[int], user_id: int
+    ) -> None:
+        """
+        Добавить теги к материалу
+
+        Args:
+            item_id: ID материала
+            tag_ids: Список ID тегов для добавления
+            user_id: ID пользователя (для проверки доступа)
+
+        Raises:
+            EntityNotFoundError: Если материал не найден
+            PermissionDeniedError: Если материал не принадлежит пользователю или теги не принадлежат пользователю
+        """
+        # Получаем существующий материал
+        entity = await self.item_repository.get_by_id(item_id)
+
+        if entity is None:
+            raise EntityNotFoundError("Item", item_id)
+
+        # Проверяем, что материал принадлежит пользователю
+        if entity.user_id != user_id:
+            raise PermissionDeniedError("Доступ к материалу запрещен")
+
+        # Проверяем, что все теги принадлежат пользователю
+        await self._validate_tags_ownership(user_id, tag_ids)
+
+        # Добавляем теги
+        await self.item_repository.add_tags(item_id, tag_ids)
+
+    async def remove_tags_from_item(
+        self, item_id: int, tag_ids: List[int], user_id: int
+    ) -> None:
+        """
+        Удалить теги у материала
+
+        Args:
+            item_id: ID материала
+            tag_ids: Список ID тегов для удаления
+            user_id: ID пользователя (для проверки доступа)
+
+        Raises:
+            EntityNotFoundError: Если материал не найден
+            PermissionDeniedError: Если материал не принадлежит пользователю
+        """
+        # Получаем существующий материал
+        entity = await self.item_repository.get_by_id(item_id)
+
+        if entity is None:
+            raise EntityNotFoundError("Item", item_id)
+
+        # Проверяем, что материал принадлежит пользователю
+        if entity.user_id != user_id:
+            raise PermissionDeniedError("Доступ к материалу запрещен")
+
+        # Удаляем теги
+        await self.item_repository.remove_tags(item_id, tag_ids)

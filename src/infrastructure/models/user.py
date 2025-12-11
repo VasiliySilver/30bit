@@ -2,12 +2,16 @@
 SQLAlchemy модель для User
 """
 
-from typing import List
+from typing import List, TYPE_CHECKING
 from datetime import datetime
 from sqlalchemy import String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
+
+if TYPE_CHECKING:
+    from src.infrastructure.models.item import ItemModel
+    from src.infrastructure.models.tag import TagModel
 
 
 class UserModel(Base):

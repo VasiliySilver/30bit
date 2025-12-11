@@ -3,6 +3,7 @@
 """
 
 from typing import Optional, List
+from datetime import datetime
 from sqlalchemy import select, and_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +12,7 @@ from src.domain.entities.item import Item
 from src.domain.enums import ItemKind, ItemStatus, Priority
 from src.infrastructure.models.item import ItemModel
 from src.infrastructure.models.tag import TagModel
+from src.infrastructure.models.item_tag import item_tags
 from src.infrastructure.repositories.base import BaseRepository
 
 
@@ -85,6 +87,12 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
         kind: Optional[ItemKind] = None,
         status: Optional[ItemStatus] = None,
         priority: Optional[Priority] = None,
+        tag_ids: Optional[List[int]] = None,
+        title_contains: Optional[str] = None,
+        created_from: Optional[datetime] = None,
+        created_to: Optional[datetime] = None,
+        sort_by: str = "created_at",
+        sort_order: str = "desc",
     ) -> List[Item]:
         """
         Получить материалы пользователя с фильтрацией
@@ -96,10 +104,17 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
             kind: Фильтр по типу материала
             status: Фильтр по статусу
             priority: Фильтр по приоритету
+            tag_ids: Фильтр по тегам (любая из указанных)
+            title_contains: Подстрока в названии
+            created_from: Дата создания от
+            created_to: Дата создания до
+            sort_by: Поле сортировки
+            sort_order: Порядок сортировки
 
         Returns:
             List[Item]: Список доменных сущностей материалов
         """
+
         conditions = [ItemModel.user_id == user_id]
 
         if kind is not None:
@@ -111,12 +126,42 @@ class ItemRepository(BaseRepository[ItemModel, Item]):
         if priority is not None:
             conditions.append(ItemModel.priority == priority)
 
+        if title_contains is not None:
+            conditions.append(ItemModel.title.ilike(f"%{title_contains}%"))
+
+        if created_from is not None:
+            conditions.append(ItemModel.created_at >= created_from)
+
+        if created_to is not None:
+            conditions.append(ItemModel.created_at <= created_to)
+
+        # Фильтр по тегам - материал должен иметь хотя бы один из указанных тегов
+        if tag_ids:
+            subquery = (
+                select(item_tags.c.item_id)
+                .where(item_tags.c.tag_id.in_(tag_ids))
+                .distinct()
+            )
+            conditions.append(ItemModel.id.in_(subquery))
+
+        # Сортировка
+        order_column = {
+            "created_at": ItemModel.created_at,
+            "updated_at": ItemModel.updated_at,
+            "priority": ItemModel.priority,
+        }.get(sort_by, ItemModel.created_at)
+
+        if sort_order == "asc":
+            order_by = order_column.asc()
+        else:
+            order_by = order_column.desc()
+
         stmt = (
             select(ItemModel)
             .where(and_(*conditions))
             .offset(skip)
             .limit(limit)
-            .order_by(ItemModel.created_at.desc())
+            .order_by(order_by)
         )
 
         result = await self.session.execute(stmt)

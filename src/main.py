@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import get_settings
 from src.database import init_db
-from src.api.routers import items_router, tags_router
+from src.api.routers import items_router, tags_router, user_router
 
 settings = get_settings()
 
@@ -45,6 +45,7 @@ app.add_middleware(
 )
 
 # Подключение роутеров
+app.include_router(user_router, prefix=settings.api_prefix)
 app.include_router(items_router, prefix=settings.api_prefix)
 app.include_router(tags_router, prefix=settings.api_prefix)
 

@@ -2,12 +2,19 @@
 SQLAlchemy модель для Item
 """
 
+from typing import TYPE_CHECKING
+
 from datetime import datetime
 from sqlalchemy import String, Integer, Text, DateTime, Enum as SQLEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
 from src.domain.enums import ItemKind, ItemStatus, Priority
+
+
+if TYPE_CHECKING:
+    from src.infrastructure.models.user import UserModel
+    from src.infrastructure.models.tag import TagModel
 
 
 class ItemModel(Base):

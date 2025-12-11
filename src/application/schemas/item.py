@@ -130,6 +130,12 @@ class ItemFilterParams(BaseModel):
         kind: Фильтр по типу материала
         status: Фильтр по статусу
         priority: Фильтр по приоритету
+        tag_ids: Фильтр по тегам (любая из указанных)
+        title_contains: Подстрока в названии
+        created_from: Дата создания от
+        created_to: Дата создания до
+        sort_by: Поле сортировки
+        sort_order: Порядок сортировки
         skip: Количество пропускаемых записей
         limit: Максимальное количество записей
     """
@@ -137,5 +143,17 @@ class ItemFilterParams(BaseModel):
     kind: Optional[ItemKind] = Field(None, description="Фильтр по типу материала")
     status: Optional[ItemStatus] = Field(None, description="Фильтр по статусу")
     priority: Optional[Priority] = Field(None, description="Фильтр по приоритету")
+    tag_ids: Optional[List[int]] = Field(
+        None, description="Фильтр по тегам (любая из указанных)"
+    )
+    title_contains: Optional[str] = Field(None, description="Подстрока в названии")
+    created_from: Optional[datetime] = Field(None, description="Дата создания от")
+    created_to: Optional[datetime] = Field(None, description="Дата создания до")
+    sort_by: Optional[str] = Field(
+        "created_at", description="Поле сортировки (created_at|updated_at|priority)"
+    )
+    sort_order: Optional[str] = Field(
+        "desc", description="Порядок сортировки (asc|desc)"
+    )
     skip: int = Field(0, ge=0, description="Количество пропускаемых записей")
     limit: int = Field(20, ge=1, le=100, description="Максимальное количество записей")

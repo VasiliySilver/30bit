@@ -3,7 +3,7 @@
 """
 
 from typing import Generic, TypeVar, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 # Generic тип для данных в пагинированном ответе
 T = TypeVar("T")
@@ -25,10 +25,9 @@ class PaginatedResponse(BaseModel, Generic[T]):
     skip: int = Field(..., ge=0, description="Количество пропущенных элементов")
     limit: int = Field(..., ge=1, description="Максимальное количество элементов")
 
-    class Config:
-        json_schema_extra = {
-            "example": {"items": [], "total": 0, "skip": 0, "limit": 20}
-        }
+    model_config = ConfigDict(
+        json_schema_extra={"example": {"items": [], "total": 0, "skip": 0, "limit": 20}}
+    )
 
 
 class ErrorResponse(BaseModel):
@@ -45,14 +44,15 @@ class ErrorResponse(BaseModel):
     message: str = Field(..., description="Сообщение об ошибке")
     details: dict | None = Field(None, description="Дополнительные детали")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "error": "ValidationError",
                 "message": "Неверные данные",
                 "details": {"field": "email", "issue": "Invalid format"},
             }
         }
+    )
 
 
 class MessageResponse(BaseModel):
@@ -65,5 +65,6 @@ class MessageResponse(BaseModel):
 
     message: str = Field(..., description="Сообщение")
 
-    class Config:
-        json_schema_extra = {"example": {"message": "Операция выполнена успешно"}}
+    model_config = ConfigDict(
+        json_schema_extra={"example": {"message": "Операция выполнена успешно"}}
+    )

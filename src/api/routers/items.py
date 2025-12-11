@@ -3,6 +3,7 @@ API роутер для работы с материалами
 """
 
 from typing import List, Optional
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 
 from src.application.services.item_service import ItemService
@@ -54,6 +55,16 @@ async def get_items(
     kind: Optional[ItemKind] = Query(None, description="Фильтр по типу материала"),
     status: Optional[ItemStatus] = Query(None, description="Фильтр по статусу"),
     priority: Optional[Priority] = Query(None, description="Фильтр по приоритету"),
+    tag_ids: Optional[List[int]] = Query(
+        None, description="Фильтр по тегам (любая из указанных)"
+    ),
+    title_contains: Optional[str] = Query(None, description="Подстрока в названии"),
+    created_from: Optional[datetime] = Query(None, description="Дата создания от"),
+    created_to: Optional[datetime] = Query(None, description="Дата создания до"),
+    sort_by: str = Query(
+        "created_at", description="Поле сортировки (created_at|updated_at|priority)"
+    ),
+    sort_order: str = Query("desc", description="Порядок сортировки (asc|desc)"),
     user_id: int = Depends(get_current_user_id),
     item_service: ItemService = Depends(get_item_service),
 ) -> List[ItemResponse]:
@@ -67,6 +78,12 @@ async def get_items(
         kind=kind,
         status=status,
         priority=priority,
+        tag_ids=tag_ids,
+        title_contains=title_contains,
+        created_from=created_from,
+        created_to=created_to,
+        sort_by=sort_by,
+        sort_order=sort_order,
     )
 
 
@@ -123,6 +140,78 @@ async def update_item(
     """
     try:
         return await item_service.update_item(item_id, user_id, data)
+    except EntityNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": "EntityNotFoundError", "message": e.message},
+        )
+    except PermissionDeniedError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": "PermissionDeniedError", "message": e.message},
+        )
+
+
+@router.post(
+    "/{item_id}/tags",
+    response_model=MessageResponse,
+    summary="Добавить теги к материалу",
+    responses={
+        200: {"description": "Теги успешно добавлены"},
+        403: {"model": ErrorResponse, "description": "Доступ запрещен"},
+        404: {"model": ErrorResponse, "description": "Материал не найден"},
+    },
+)
+async def add_tags_to_item(
+    item_id: int,
+    tag_ids: List[int],
+    user_id: int = Depends(get_current_user_id),
+    item_service: ItemService = Depends(get_item_service),
+) -> MessageResponse:
+    """
+    Добавить теги к материалу
+    """
+    try:
+        # Добавляем теги
+        await item_service.add_tags_to_item(item_id, tag_ids, user_id)
+
+        return MessageResponse(message="Теги успешно добавлены к материалу")
+    except EntityNotFoundError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={"error": "EntityNotFoundError", "message": e.message},
+        )
+    except PermissionDeniedError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": "PermissionDeniedError", "message": e.message},
+        )
+
+
+@router.delete(
+    "/{item_id}/tags",
+    response_model=MessageResponse,
+    summary="Удалить теги у материала",
+    responses={
+        200: {"description": "Теги успешно удалены"},
+        403: {"model": ErrorResponse, "description": "Доступ запрещен"},
+        404: {"model": ErrorResponse, "description": "Материал не найден"},
+    },
+)
+async def remove_tags_from_item(
+    item_id: int,
+    tag_ids: List[int],
+    user_id: int = Depends(get_current_user_id),
+    item_service: ItemService = Depends(get_item_service),
+) -> MessageResponse:
+    """
+    Удалить теги у материала
+    """
+    try:
+        # Удаляем теги
+        await item_service.remove_tags_from_item(item_id, tag_ids, user_id)
+
+        return MessageResponse(message="Теги успешно удалены у материала")
     except EntityNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
