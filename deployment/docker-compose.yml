@@ -1,0 +1,55 @@
+---
+services:
+  # PostgreSQL база данных
+  postgres:
+    image: postgres:16-alpine
+    container_name: reading_list_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-reading_list}
+      POSTGRES_USER: ${POSTGRES_USER:-reading_list_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reading_list_pass}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reading_list_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reading_list_network
+
+  # FastAPI приложение
+  # api:
+  #   build:
+  #     context: ..
+  #     dockerfile: deployment/Dockerfile
+  #   container_name: reading_list_api
+  #   environment:
+  #     DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-reading_list_user}:${POSTGRES_PASSWORD:-reading_list_pass}@postgres:5432/${POSTGRES_DB:-reading_list}
+  #     DEBUG: ${DEBUG:-false}
+  #     API_PREFIX: ${API_PREFIX:-/api/v1}
+  #   ports:
+  #     - "${API_PORT:-8000}:8000"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ../src:/app/src
+  #     - ../alembic:/app/alembic
+  #   networks:
+  #     - reading_list_network
+  #   command: >
+  #     sh -c "
+  #       uv run alembic upgrade head &&
+  #       uv run python scripts/seed_data.py &&
+  #       uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+  #     "
+
+volumes:
+  postgres_data:
+
+networks:
+  reading_list_network:
+    driver: bridge
