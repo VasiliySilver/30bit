@@ -6,10 +6,9 @@ from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import Base
 
 # Типы для Generic репозитория
-ModelType = TypeVar("ModelType", bound=Base)
+ModelType = TypeVar("ModelType", bound=object)
 EntityType = TypeVar("EntityType")
 
 
