@@ -14,9 +14,7 @@ class Settings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False
     )
 
     # Настройки приложения
@@ -25,7 +23,7 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # Настройки базы данных
-    database_url: str
+    database_url: str = "sqlite+aiosqlite:///./reading_list.db"
     database_echo: bool = False
 
     # Настройки API

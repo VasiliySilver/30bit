@@ -1,11 +1,12 @@
 """
 API роутер для работы с материалами
 """
+
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 
 from src.application.services.item_service import ItemService
-from src.application.schemas.item import ItemCreate, ItemUpdate, ItemResponse, ItemFilterParams
+from src.application.schemas.item import ItemCreate, ItemUpdate, ItemResponse
 from src.application.schemas.common import MessageResponse, ErrorResponse
 from src.domain.enums import ItemKind, ItemStatus, Priority
 from src.domain.exceptions import EntityNotFoundError, PermissionDeniedError
@@ -21,13 +22,13 @@ router = APIRouter(prefix="/items", tags=["items"])
     summary="Создать новый материал",
     responses={
         201: {"description": "Материал успешно создан"},
-        403: {"model": ErrorResponse, "description": "Доступ к тегам запрещен"}
-    }
+        403: {"model": ErrorResponse, "description": "Доступ к тегам запрещен"},
+    },
 )
 async def create_item(
     data: ItemCreate,
     user_id: int = Depends(get_current_user_id),
-    item_service: ItemService = Depends(get_item_service)
+    item_service: ItemService = Depends(get_item_service),
 ) -> ItemResponse:
     """
     Создать новый материал для текущего пользователя
@@ -37,7 +38,7 @@ async def create_item(
     except PermissionDeniedError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "PermissionDeniedError", "message": e.message}
+            detail={"error": "PermissionDeniedError", "message": e.message},
         )
 
 
@@ -45,9 +46,7 @@ async def create_item(
     "",
     response_model=List[ItemResponse],
     summary="Получить список материалов пользователя",
-    responses={
-        200: {"description": "Список материалов"}
-    }
+    responses={200: {"description": "Список материалов"}},
 )
 async def get_items(
     skip: int = Query(0, ge=0, description="Количество пропускаемых записей"),
@@ -56,7 +55,7 @@ async def get_items(
     status: Optional[ItemStatus] = Query(None, description="Фильтр по статусу"),
     priority: Optional[Priority] = Query(None, description="Фильтр по приоритету"),
     user_id: int = Depends(get_current_user_id),
-    item_service: ItemService = Depends(get_item_service)
+    item_service: ItemService = Depends(get_item_service),
 ) -> List[ItemResponse]:
     """
     Получить все материалы текущего пользователя с возможностью фильтрации
@@ -67,7 +66,7 @@ async def get_items(
         limit=limit,
         kind=kind,
         status=status,
-        priority=priority
+        priority=priority,
     )
 
 
@@ -78,13 +77,13 @@ async def get_items(
     responses={
         200: {"description": "Данные материала"},
         403: {"model": ErrorResponse, "description": "Доступ запрещен"},
-        404: {"model": ErrorResponse, "description": "Материал не найден"}
-    }
+        404: {"model": ErrorResponse, "description": "Материал не найден"},
+    },
 )
 async def get_item(
     item_id: int,
     user_id: int = Depends(get_current_user_id),
-    item_service: ItemService = Depends(get_item_service)
+    item_service: ItemService = Depends(get_item_service),
 ) -> ItemResponse:
     """
     Получить материал по ID
@@ -94,12 +93,12 @@ async def get_item(
     except EntityNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "EntityNotFoundError", "message": e.message}
+            detail={"error": "EntityNotFoundError", "message": e.message},
         )
     except PermissionDeniedError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "PermissionDeniedError", "message": e.message}
+            detail={"error": "PermissionDeniedError", "message": e.message},
         )
 
 
@@ -110,14 +109,14 @@ async def get_item(
     responses={
         200: {"description": "Материал успешно обновлен"},
         403: {"model": ErrorResponse, "description": "Доступ запрещен"},
-        404: {"model": ErrorResponse, "description": "Материал не найден"}
-    }
+        404: {"model": ErrorResponse, "description": "Материал не найден"},
+    },
 )
 async def update_item(
     item_id: int,
     data: ItemUpdate,
     user_id: int = Depends(get_current_user_id),
-    item_service: ItemService = Depends(get_item_service)
+    item_service: ItemService = Depends(get_item_service),
 ) -> ItemResponse:
     """
     Обновить материал
@@ -127,12 +126,12 @@ async def update_item(
     except EntityNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "EntityNotFoundError", "message": e.message}
+            detail={"error": "EntityNotFoundError", "message": e.message},
         )
     except PermissionDeniedError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "PermissionDeniedError", "message": e.message}
+            detail={"error": "PermissionDeniedError", "message": e.message},
         )
 
 
@@ -143,13 +142,13 @@ async def update_item(
     responses={
         200: {"description": "Материал успешно удален"},
         403: {"model": ErrorResponse, "description": "Доступ запрещен"},
-        404: {"model": ErrorResponse, "description": "Материал не найден"}
-    }
+        404: {"model": ErrorResponse, "description": "Материал не найден"},
+    },
 )
 async def delete_item(
     item_id: int,
     user_id: int = Depends(get_current_user_id),
-    item_service: ItemService = Depends(get_item_service)
+    item_service: ItemService = Depends(get_item_service),
 ) -> MessageResponse:
     """
     Удалить материал
@@ -160,10 +159,10 @@ async def delete_item(
     except EntityNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "EntityNotFoundError", "message": e.message}
+            detail={"error": "EntityNotFoundError", "message": e.message},
         )
     except PermissionDeniedError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "PermissionDeniedError", "message": e.message}
+            detail={"error": "PermissionDeniedError", "message": e.message},
         )

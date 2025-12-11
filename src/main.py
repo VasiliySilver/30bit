@@ -1,6 +1,7 @@
 """
 Главный файл FastAPI приложения
 """
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,7 +17,7 @@ settings = get_settings()
 async def lifespan(app: FastAPI):
     """
     Управление жизненным циклом приложения
-    
+
     При старте: инициализация БД
     При остановке: очистка ресурсов
     """
@@ -31,7 +32,7 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     debug=settings.debug,
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Настройка CORS
@@ -56,7 +57,7 @@ async def root():
     return {
         "name": settings.app_name,
         "version": settings.app_version,
-        "status": "running"
+        "status": "running",
     }
 
 

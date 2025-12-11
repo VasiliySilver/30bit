@@ -1,6 +1,7 @@
 """
 Pydantic схемы для Item
 """
+
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
@@ -11,7 +12,7 @@ from src.domain.enums import ItemKind, ItemStatus, Priority
 class ItemBase(BaseModel):
     """
     Базовая схема материала
-    
+
     Attributes:
         title: Название материала
         kind: Тип материала (book|article)
@@ -19,9 +20,14 @@ class ItemBase(BaseModel):
         priority: Приоритет (low|normal|high)
         notes: Заметки
     """
-    title: str = Field(..., min_length=1, max_length=500, description="Название материала")
+
+    title: str = Field(
+        ..., min_length=1, max_length=500, description="Название материала"
+    )
     kind: ItemKind = Field(..., description="Тип материала")
-    status: ItemStatus = Field(default=ItemStatus.PLANNED, description="Статус прочтения")
+    status: ItemStatus = Field(
+        default=ItemStatus.PLANNED, description="Статус прочтения"
+    )
     priority: Priority = Field(default=Priority.NORMAL, description="Приоритет")
     notes: Optional[str] = Field(None, description="Заметки")
 
@@ -29,12 +35,13 @@ class ItemBase(BaseModel):
 class ItemCreate(ItemBase):
     """
     Схема для создания материала
-    
+
     Attributes:
         tag_ids: Список ID тегов для материала
     """
+
     tag_ids: List[int] = Field(default_factory=list, description="Список ID тегов")
-    
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -43,7 +50,7 @@ class ItemCreate(ItemBase):
                 "status": "planned",
                 "priority": "high",
                 "notes": "Must read for software developers",
-                "tag_ids": [1, 2]
+                "tag_ids": [1, 2],
             }
         }
     )
@@ -52,22 +59,27 @@ class ItemCreate(ItemBase):
 class ItemUpdate(BaseModel):
     """
     Схема для обновления материала
-    
+
     Все поля опциональны
     """
-    title: Optional[str] = Field(None, min_length=1, max_length=500, description="Название материала")
+
+    title: Optional[str] = Field(
+        None, min_length=1, max_length=500, description="Название материала"
+    )
     kind: Optional[ItemKind] = Field(None, description="Тип материала")
     status: Optional[ItemStatus] = Field(None, description="Статус прочтения")
     priority: Optional[Priority] = Field(None, description="Приоритет")
     notes: Optional[str] = Field(None, description="Заметки")
-    tag_ids: Optional[List[int]] = Field(None, description="Список ID тегов (заменит существующие)")
-    
+    tag_ids: Optional[List[int]] = Field(
+        None, description="Список ID тегов (заменит существующие)"
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "status": "reading",
                 "notes": "Started reading chapter 1",
-                "tag_ids": [1, 3]
+                "tag_ids": [1, 3],
             }
         }
     )
@@ -76,7 +88,7 @@ class ItemUpdate(BaseModel):
 class ItemResponse(ItemBase):
     """
     Схема ответа с данными материала
-    
+
     Attributes:
         id: ID материала
         user_id: ID пользователя-владельца
@@ -84,12 +96,13 @@ class ItemResponse(ItemBase):
         updated_at: Дата обновления
         tag_ids: Список ID тегов
     """
+
     id: int = Field(..., description="ID материала")
     user_id: int = Field(..., description="ID пользователя-владельца")
     created_at: datetime = Field(..., description="Дата создания")
     updated_at: datetime = Field(..., description="Дата обновления")
     tag_ids: List[int] = Field(default_factory=list, description="Список ID тегов")
-    
+
     model_config = ConfigDict(
         from_attributes=True,
         json_schema_extra={
@@ -103,16 +116,16 @@ class ItemResponse(ItemBase):
                 "notes": "Started reading chapter 1",
                 "created_at": "2025-12-11T12:00:00",
                 "updated_at": "2025-12-11T14:30:00",
-                "tag_ids": [1, 3]
+                "tag_ids": [1, 3],
             }
-        }
+        },
     )
 
 
 class ItemFilterParams(BaseModel):
     """
     Параметры фильтрации для списка материалов
-    
+
     Attributes:
         kind: Фильтр по типу материала
         status: Фильтр по статусу
@@ -120,6 +133,7 @@ class ItemFilterParams(BaseModel):
         skip: Количество пропускаемых записей
         limit: Максимальное количество записей
     """
+
     kind: Optional[ItemKind] = Field(None, description="Фильтр по типу материала")
     status: Optional[ItemStatus] = Field(None, description="Фильтр по статусу")
     priority: Optional[Priority] = Field(None, description="Фильтр по приоритету")

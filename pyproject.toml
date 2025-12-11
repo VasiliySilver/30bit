@@ -7,6 +7,8 @@ requires-python = ">=3.12" # <-- ИСПРАВЛЕНО: используем ~ в
 dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.17.2",
+    "asyncpg>=0.31.0",
+    "email-validator>=2.3.0",
     "fastapi>=0.124.2",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
@@ -17,13 +19,19 @@ dependencies = [
 [tool.uv]
 # Configuration specific to uv can go here
 
+[tool.pyright]
+pythonPath = "src"
+
 [tool.ruff]
+src = ["src"]
 ignore = ["F821"]
 line-length = 88
 target-version = "py312"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"
+pythonpath = ["."]
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.black]
 line-length = 88

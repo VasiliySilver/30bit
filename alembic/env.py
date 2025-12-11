@@ -1,6 +1,7 @@
 """
 Конфигурация Alembic для миграций
 """
+
 import asyncio
 from logging.config import fileConfig
 
@@ -15,10 +16,6 @@ from src.config import get_settings
 from src.database import Base
 
 # Импортируем все модели, чтобы Alembic их видел
-from src.infrastructure.models.user import UserModel
-from src.infrastructure.models.tag import TagModel
-from src.infrastructure.models.item import ItemModel
-from src.infrastructure.models.item_tag import item_tags
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
