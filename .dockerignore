@@ -1,0 +1,12 @@
+.git
+tests
+deployment
+.env*
+uv.lock
+pyproject.toml
+README.md
+TASK.md
+.gitignore
+alembic/versions
+scripts/__pycache__
+src/__pycache__
